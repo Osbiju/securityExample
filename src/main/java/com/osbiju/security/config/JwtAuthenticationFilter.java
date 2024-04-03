@@ -6,6 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,6 +20,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { //because wq
 
     //create the class to extract userEmail from JwtToken
     private final JwtService jwtService;
+    private UserDetailsService userDetailsService;
+    //implement the bean of userDetailsService inside config
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -37,8 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { //because wq
         //after checking if JWT exists, we need to call the userDetailsService to check if we have the user already in the database.
         //to do that we need to call the JWTService to extract the userName(under final string jwt)
         //extraction:
-        //TODO extract userEmail from JwtToken(to do that we need a class to manipulate the JwtToken;
+        //extract userEmail from JwtToken(to do that we need a class to manipulate the JwtToken;
         userEmail = jwtService.extractUserName(jwt);
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+        }
 
     }
 }
