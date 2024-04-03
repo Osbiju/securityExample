@@ -29,11 +29,11 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private role role;
+    @Enumerated(EnumType.STRING) //string because we want take the sting value, ordinal to take the number
+    private Role role;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() { // this returns a list of roles
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
