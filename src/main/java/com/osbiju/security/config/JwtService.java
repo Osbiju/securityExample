@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.security.PublicKey;
+import java.util.function.Function;
 
 @Service
 public class JwtService {
@@ -19,6 +20,11 @@ public class JwtService {
 
     public String extractUserName(String token) {
         return null;
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimResolver){
+        final Claims claims = extractAllClaims(token);
+        return  claimResolver.apply(claims);
     }
 
     //method to extract one single claim
@@ -42,7 +48,7 @@ public class JwtService {
 //    }
 
     //amb la versio 0.11.5 de Jwt com al video
-    private Claims extactAllClaims(String token){
+    private Claims extractAllClaims(String token){
        return Jwts
                .parserBuilder()
                .setSigningKey(getSignInKey()) //signInKey is a secret key that is used to digitally sign the Jwt, is used to create the signature part of the jwt which is use to verify that the sender of jwt is who is claim to be and ensure that the message is not change along the way
